@@ -1,8 +1,8 @@
 package se.artcomputer.desktopweb;
 
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import javafx.application.Application;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,9 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+
+import static se.artcomputer.desktopweb.RootContext.rootHandler;
 
 public class Server extends Application {
 
@@ -43,12 +43,22 @@ public class Server extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        showStage(primaryStage, createStageContent());
+    }
+
+    private VBox createStageContent() {
+        return new VBox(new Label(message), createStopButton());
+    }
+
+    private Button createStopButton() {
         Button stopButton = new Button("Stop");
         stopButton.setStyle("-fx-font: 22 arial; -fx-base: #b60000;");
         stopButton.setOnAction(event -> System.exit(0));
-        Label label = new Label(message);
-        VBox vBox = new VBox(label, stopButton);
-        primaryStage.setScene(new Scene(vBox, 300, 250));
+        return stopButton;
+    }
+
+    private void showStage(Stage primaryStage, Parent content) {
+        primaryStage.setScene(new Scene(content, 300, 250));
         primaryStage.setTitle("Desktop web server");
         primaryStage.show();
     }
@@ -59,14 +69,5 @@ public class Server extends Application {
         httpServer.start();
     }
 
-    private HttpHandler rootHandler() {
-        return http -> {
-            http.getResponseHeaders().add("Content-type", "text/html");
-            http.sendResponseHeaders(200, 0);
-            OutputStream stream = http.getResponseBody();
-            PrintWriter printWriter = new PrintWriter(stream);
-            printWriter.write(String.format("<h1>Hello %s</h1>", http.getRemoteAddress().getHostName()));
-            printWriter.close();
-        };
-    }
+
 }
