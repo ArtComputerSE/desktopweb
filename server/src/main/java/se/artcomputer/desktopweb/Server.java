@@ -47,7 +47,8 @@ public class Server extends Application {
     }
 
     private VBox createStageContent() {
-        return new VBox(new Label(message), createStopButton());
+        String rootFolder = System.getProperty("user.dir");
+        return new VBox(new Label(message), new Label("Location: " + rootFolder), createStopButton());
     }
 
     private Button createStopButton() {
