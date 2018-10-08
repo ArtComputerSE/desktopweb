@@ -15,8 +15,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import static se.artcomputer.desktopweb.RootContext.rootHandler;
-
 public class Server extends Application {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -24,6 +22,7 @@ public class Server extends Application {
     private static final int PORT = 8080;
 
     private String message = "The server started at http://localhost:" + PORT;
+    private final String rootFolder = System.getProperty("user.dir");
 
     public static void main(String[] args) {
         launch(args);
@@ -47,7 +46,6 @@ public class Server extends Application {
     }
 
     private VBox createStageContent() {
-        String rootFolder = System.getProperty("user.dir");
         return new VBox(new Label(message), new Label("Location: " + rootFolder), createStopButton());
     }
 
@@ -66,7 +64,7 @@ public class Server extends Application {
 
     private void run() throws IOException {
         HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-        httpServer.createContext("/", rootHandler());
+        httpServer.createContext("/", new RootContext(rootFolder).handler());
         httpServer.start();
     }
 
